@@ -7,17 +7,17 @@
   "author": "Alex Davis <alex@alex2006hw.com>",
   "main": "jobWorker.js",
   "scripts": {
-    "prebuild": "npm run clean",
+    "prebuild": "npm run clean && ./scripts/getSubmodules",
     "build": "npm-run-all sort:package format;npm run transpile ",
     "postbuild": "cp -Ra templates/packages/package.json ./build",
     "clean": "rm -rf build;mkdir -p build/jobs",
-    "unlock": "find . -name package-lock.json | xargs rm -f",
     "format": "prettier --write \"./**/*{.js, .json}\" ",
     "sort:package": "./node_modules/sort-package-json/index.js ",
     "transpile": "npm-run-all -l -p transpile:server transpile:jobs transpile:configs ",
     "transpile:configs": "babel \"templates/configs\" --out-dir \"build/configs\" --copy-files --ignore \"node_modules\" ",
     "transpile:jobs": "babel \"jobs\" --out-dir \"build/jobs\" --copy-files --ignore \"node_modules\" ",
-    "transpile:server": "babel \"src\" --out-dir \"build\" --copy-files --ignore \"node_modules\""
+    "transpile:server": "babel \"src\" --out-dir \"build\" --copy-files --ignore \"node_modules\"",
+    "unlock": "find . -name package-lock.json | xargs rm -f"
   },
   "babel": {
     "presets": [
