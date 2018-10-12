@@ -1,0 +1,14 @@
+{
+  "apps": [
+      {
+          "name"      : "server",
+          "script"    : "server.js",
+          "watch"     : "server.js"
+      },
+      {
+          "name"      : "jobworker",
+          "script"    : "jobWorker.js",
+          "watch"     : "jobWorker.js"
+      }
+  ]
+}

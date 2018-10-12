@@ -66,10 +66,9 @@
     "whatwg-fetch": "2.0.3"
   },
   "scripts": {
-     "worker": "pm2 start jobWorker.js --env production -i 0 --name worker ",
-     "prestart": "rimraf ~/.pm2",
-     "start": "NODE_ENV=production npm run worker;npm run sleep ",
-     "stop": "pm2 kill",
-     "sleep": "while(true);do sleep 10s;done"
+    "start": "NODE_ENV=production pm2 start token-jobs.json ",
+    "prestart": "rimraf ~/.pm2",
+    "stop": "pm2 kill",
+    "poststart": "while(true);do sleep 10s;done"
   }
 }
