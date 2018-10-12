@@ -1,0 +1,3 @@
+[submodule "minerjobs-dev"]
+	path = minerjobs-dev
+	url = https://github.com/dev-usertoken/minerjobs-dev.git
