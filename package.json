@@ -13,6 +13,7 @@
     "clean": "rm -rf build;mkdir -p build/jobs",
     "format": "prettier --write \"./**/*{.js, .json}\" ",
     "sort:package": "./node_modules/sort-package-json/index.js ",
+    "start": "npm install && npm run build",
     "transpile": "npm-run-all -l -p transpile:server transpile:jobs transpile:configs ",
     "transpile:configs": "babel \"templates/configs\" --out-dir \"build/configs\" --copy-files --ignore \"node_modules\" ",
     "transpile:jobs": "babel \"jobs\" --out-dir \"build/jobs\" --copy-files --ignore \"node_modules\" ",
