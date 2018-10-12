@@ -1,3 +1,6 @@
 [submodule "minerjobs-dev"]
 	path = minerjobs-dev
 	url = https://github.com/dev-usertoken/minerjobs-dev.git
+[submodule "src/utils"]
+	path = src/utils
+	url = https://github.com/dev-usertoken/template-blockchain.git
