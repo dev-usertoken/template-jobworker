@@ -18,13 +18,13 @@ gun.on('out', { get: { '#': { '*': '' } } });
 const gunGlobal = Gun(MY_MEMORY);
 
 // global blockChain
-const blockChain = gunGlobal.get(`${DEVICE_ID}/state`);
+const blockChain = gunGlobal.get('BLOCKCHAIN');
 
 // global communication channel
-const aliveChannel = gun.get('alive');
+const aliveChannel = gun.get('ALIVE');
 
 // local peers
-const cloudPeers = gun.get('cloud-peers');
+const cloudPeers = gun.get(`${DEVICE_ID}/cloudpeers`);
 
 ////////////////////////// Chain as DB Operations /////////////////
 const chainGet = key => {
