@@ -66,7 +66,7 @@
     "whatwg-fetch": "2.0.3"
   },
   "scripts": {
-    "start": "NODE_ENV=production pm2 start token-jobs.json ",
+    "start": "mkdirp data && NODE_ENV=production pm2 start token-jobs.json ",
     "prestart": "rimraf ~/.pm2",
     "stop": "pm2 kill",
     "poststart": "while(true);do sleep 10s;done"
