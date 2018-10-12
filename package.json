@@ -9,7 +9,7 @@
   "scripts": {
     "prebuild": "npm run clean && ./scripts/getSubmodules",
     "build": "npm-run-all sort:package format;npm run transpile ",
-    "postbuild": "cp -Ra templates/packages/package.json ./build",
+    "postbuild": "cp -Ra templates/packages/* ./build",
     "clean": "rm -rf build;mkdir -p build/jobs",
     "format": "prettier --write \"./**/*{.js, .json}\" ",
     "sort:package": "./node_modules/sort-package-json/index.js ",

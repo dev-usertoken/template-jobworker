@@ -1,19 +1,19 @@
-import { DEVICE_ID } from "../configs/localconfigs";
-import { ROOT_MEMORIES, MY_MEMORY } from "../configs/serverMemories";
+import { DEVICE_ID } from '../configs/localconfigs';
+import { ROOT_MEMORIES, MY_MEMORY } from '../configs/serverMemories';
 
-console.log("0.jobworker blockchain : ", DEVICE_ID, ROOT_MEMORIES, MY_MEMORY);
+console.log('0.jobworker blockchain : ', DEVICE_ID, ROOT_MEMORIES, MY_MEMORY);
 
-const Gun = require("gun");
-require("gun/lib/not.js");
-require("gun/lib/path.js");
-require("gun-unset");
+const Gun = require('gun');
+require('gun/lib/not.js');
+require('gun/lib/path.js');
+require('gun-unset');
 
 const gunOptions = {
-  peer: ROOT_MEMORIES
+  peer: ROOT_MEMORIES,
 };
 const gun = Gun(gunOptions);
 
-gun.on("out", { get: { "#": { "*": "" } } });
+gun.on('out', { get: { '#': { '*': '' } } });
 
 const gunGlobal = Gun(MY_MEMORY);
 
@@ -21,40 +21,40 @@ const gunGlobal = Gun(MY_MEMORY);
 const blockChain = gunGlobal.get(`${DEVICE_ID}/state`);
 
 // global communication channel
-const aliveChannel = gun.get("alive");
+const aliveChannel = gun.get('alive');
 
 // local peers
-const cloudPeers = gun.get("cloud-peers");
+const cloudPeers = gun.get('cloud-peers');
 
 ////////////////////////// Chain as DB Operations /////////////////
 const chainGet = key => {
   //  console.log('1.jobworker blockchain chainGet ', key);
   blockChain.get(key).val(v => {
-    console.log("1.jobworker blockchain chainGet ", key, v);
+    console.log('1.jobworker blockchain chainGet ', key, v);
     return v;
   });
 };
 const chainPut = (key, value) => {
-  console.log("1.jobworker blockchain chainPut ", key, value);
+  console.log('1.jobworker blockchain chainPut ', key, value);
   blockChain.get(key).put(value);
 };
 ///////////////////////// Chain as communication conduit ///////////
 const getAlive = key => {
   //  console.log('1.jobworker blockchain getAlive ', key);
   aliveChannel.get(key).val(v => {
-    console.log("1.jobworker blockchain getAlive ", key, v);
+    console.log('1.jobworker blockchain getAlive ', key, v);
     return v;
   });
 };
 const putAlive = (key, value) => {
-  console.log("1.jobworker blockchain putAlive ", key, value);
+  console.log('1.jobworker blockchain putAlive ', key, value);
   aliveChannel.get(key).put(value);
 };
 const heartBeat = () => {
   const beat = new Date().toISOString();
   //  console.log('1.jobworker blockchain heartBeat : ', beat);
   try {
-    aliveChannel.path("HEART_BEAT").put({ id: DEVICE_ID, date: beat });
+    aliveChannel.path('HEART_BEAT').put({ id: DEVICE_ID, date: beat });
   } catch (e) {}
 };
 ///////////////////////////
@@ -62,55 +62,55 @@ const heartBeat = () => {
 //////////////////////////
 const registerWorker = id => {
   const currentDate = new Date().toISOString();
-  console.log("1.jobworker blockchain registerWorker : ", id);
+  console.log('1.jobworker blockchain registerWorker : ', id);
   try {
     let newPeer = gun.get(id);
     // first timer heard from this peer
     cloudPeers
-      .get("peers-radius-1")
+      .get('peers-radius-1')
       .set(newPeer)
-      .get("alive")
+      .get('alive')
       .not(key => {
         console.log(
-          "3.jobworker blockchain registerWorker NEW peer : ",
+          '3.jobworker blockchain registerWorker NEW peer : ',
           key,
-          id
+          id,
         );
         // add this peer to peer-radius-1
         cloudPeers
-          .get("peers-radius-1")
+          .get('peers-radius-1')
           .set(newPeer)
-          .get("alive")
+          .get('alive')
           .put(currentDate);
       });
     // heard from this worker before
     cloudPeers
-      .get("peers-radius-1")
+      .get('peers-radius-1')
       .set(newPeer)
-      .get("alive")
+      .get('alive')
       .val(lastAlive => {
         console.log(
-          "4.jobworker blockchain registerWorker ",
+          '4.jobworker blockchain registerWorker ',
           id,
-          " lastAlive ",
-          lastAlive
+          ' lastAlive ',
+          lastAlive,
         );
         cloudPeers
-          .get("peers-radius-1")
+          .get('peers-radius-1')
           .set(newPeer)
-          .get("lastAlive")
+          .get('lastAlive')
           .put(lastAlive);
       });
     cloudPeers
-      .get("peers-radius-1")
+      .get('peers-radius-1')
       .set(newPeer)
-      .get("alive")
+      .get('alive')
       .put(currentDate);
     console.log(
-      "5.jobworker blockchain registerWorker ",
+      '5.jobworker blockchain registerWorker ',
       id,
-      " now ",
-      currentDate
+      ' now ',
+      currentDate,
     );
   } catch (e) {}
 };
@@ -119,7 +119,7 @@ var timeout;
 
 const heartbeat_stop = () => {
   clearInterval(timeout);
-  console.log("1.jobworker blockchain The heartbeat has been stopped");
+  console.log('1.jobworker blockchain The heartbeat has been stopped');
 };
 
 const heartbeat_start = () => {
@@ -139,8 +139,8 @@ const heartbeat_start = () => {
 
 heartbeat_start();
 aliveChannel
-  .path("HEART_BEAT")
-  .get("id")
+  .path('HEART_BEAT')
+  .get('id')
   .on(id => {
     if (id !== DEVICE_ID) registerWorker(id);
   });

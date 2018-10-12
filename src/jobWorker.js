@@ -1,18 +1,18 @@
-import hypernova from "hypernova/server";
-import path from "path";
-import { chainGet, chainPut } from "./utils/blockChain";
-import { Jobs } from "./jobComponents";
+import hypernova from 'hypernova/server';
+import path from 'path';
+import { chainGet, chainPut } from './utils/blockChain';
+import { Jobs } from './jobComponents';
 
 const { createGetComponent } = hypernova;
 
 const HYPER_PORT = process.env.HYPER_PORT || 9600,
-  HYPER_HOST = process.env.HYPER_HOST || "0.0.0.0",
-  HYPER_ENDPOINT = "/batch",
+  HYPER_HOST = process.env.HYPER_HOST || '0.0.0.0',
+  HYPER_ENDPOINT = '/batch',
   HYPER_URL = `http://${HYPER_HOST}:${HYPER_PORT}${HYPER_ENDPOINT}`;
 
 //if (!chainGet('HYPER_PORT')) chainPut('HYPER_PORT', HYPER_PORT);
 //if (!chainGet('HYPER_HOST')) chainPut('HYPER_HOST', HYPER_HOST);
-if (!chainGet("HYPER_URL")) chainPut("HYPER_URL", HYPER_URL);
+if (!chainGet('HYPER_URL')) chainPut('HYPER_URL', HYPER_URL);
 
 //const jobs = {
 //  SimpleComponent: path.resolve(path.join('jobs', 'SimpleComponent.js')),
@@ -23,7 +23,7 @@ const registerComponents = createGetComponent(Jobs);
 const options = {
   // the limit at which body parser will throw
   bodyParser: {
-    limit: 1024 * 1000
+    limit: 1024 * 1000,
   },
   // runs on a single process
   devMode: false,
@@ -39,7 +39,7 @@ const options = {
   // the port the app will start on
   port: HYPER_PORT,
   // default endpoint path
-  endpoint: HYPER_ENDPOINT
+  endpoint: HYPER_ENDPOINT,
 };
 
 hypernova(options);
