@@ -8,7 +8,9 @@
       {
           "name"      : "jobworker",
           "script"    : "jobWorker.js",
-          "watch"     : "jobWorker.js"
+          "watch"     : "jobWorker.js",
+          "exec_mode" : "cluster",
+          "instances" : "max"
       }
   ]
 }
