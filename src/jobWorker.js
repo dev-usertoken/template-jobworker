@@ -1,6 +1,6 @@
 import hypernova from "hypernova/server";
 import path from "path";
-import { getAppState, putAppState } from "./utils/commChannels";
+import { chainGet, chainPut } from "./utils/blockChain";
 import { Jobs } from "./jobComponents";
 
 const { createGetComponent } = hypernova;
@@ -10,9 +10,9 @@ const HYPER_PORT = process.env.HYPER_PORT || 9600,
   HYPER_ENDPOINT = "/batch",
   HYPER_URL = `http://${HYPER_HOST}:${HYPER_PORT}${HYPER_ENDPOINT}`;
 
-//if (!getAppState('HYPER_PORT')) putAppState('HYPER_PORT', HYPER_PORT);
-//if (!getAppState('HYPER_HOST')) putAppState('HYPER_HOST', HYPER_HOST);
-if (!getAppState("HYPER_URL")) putAppState("HYPER_URL", HYPER_URL);
+//if (!chainGet('HYPER_PORT')) chainPut('HYPER_PORT', HYPER_PORT);
+//if (!chainGet('HYPER_HOST')) chainPut('HYPER_HOST', HYPER_HOST);
+if (!chainGet("HYPER_URL")) chainPut("HYPER_URL", HYPER_URL);
 
 //const jobs = {
 //  SimpleComponent: path.resolve(path.join('jobs', 'SimpleComponent.js')),

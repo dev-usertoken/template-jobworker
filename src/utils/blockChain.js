@@ -1,7 +1,7 @@
 import { DEVICE_ID } from "../configs/localconfigs";
 import { ROOT_MEMORIES, MY_MEMORY } from "../configs/serverMemories";
 
-console.log("0.jobworker commChannels : ", DEVICE_ID, ROOT_MEMORIES, MY_MEMORY);
+console.log("0.jobworker blockchain : ", DEVICE_ID, ROOT_MEMORIES, MY_MEMORY);
 
 const Gun = require("gun");
 require("gun/lib/not.js");
@@ -15,48 +15,54 @@ const gun = Gun(gunOptions);
 
 gun.on("out", { get: { "#": { "*": "" } } });
 
-const gunLocal = Gun(MY_MEMORY);
+const gunGlobal = Gun(MY_MEMORY);
 
-// local channels
-const appState = gunLocal.get(`${DEVICE_ID}/state`);
+// global blockChain
+const blockChain = gunGlobal.get(`${DEVICE_ID}/state`);
 
-// cloud channels
-const cloudAlive = gun.get("alive");
-const cloudState = gun.get(`${DEVICE_ID}/state`);
-const cloudPeers = gun.get(`${DEVICE_ID}/peers`);
+// global communication channel
+const aliveChannel = gun.get("alive");
 
-const getAppState = key => {
-  //  console.log('1.jobworker commChannels getAppState ', key);
-  appState.get(key).val(v => {
-    console.log("1.jobworker commChannels getAppState ", key, v);
+// local peers
+const cloudPeers = gun.get("cloud-peers");
+
+////////////////////////// Chain as DB Operations /////////////////
+const chainGet = key => {
+  //  console.log('1.jobworker blockchain chainGet ', key);
+  blockChain.get(key).val(v => {
+    console.log("1.jobworker blockchain chainGet ", key, v);
     return v;
   });
 };
-const getCloudState = key => {
-  //  console.log('1.jobworker commChannels getCloudState ', key);
-  cloudState.get(key).val(v => {
-    console.log("1.jobworker commChannels getCloudState ", key, v);
+const chainPut = (key, value) => {
+  console.log("1.jobworker blockchain chainPut ", key, value);
+  blockChain.get(key).put(value);
+};
+///////////////////////// Chain as communication conduit ///////////
+const getAlive = key => {
+  //  console.log('1.jobworker blockchain getAlive ', key);
+  aliveChannel.get(key).val(v => {
+    console.log("1.jobworker blockchain getAlive ", key, v);
     return v;
   });
 };
-const putAppState = (key, value) => {
-  console.log("1.jobworker commChannels putAppState ", key, value);
-  appState.get(key).put(value);
-};
-const putCloudState = (key, value) => {
-  console.log("1.jobworker commChannels putCloudState ", key, value);
-  cloudState.get(key).put(value);
+const putAlive = (key, value) => {
+  console.log("1.jobworker blockchain putAlive ", key, value);
+  aliveChannel.get(key).put(value);
 };
 const heartBeat = () => {
   const beat = new Date().toISOString();
-  //  console.log('1.jobworker commChannels heartBeat : ', beat);
+  //  console.log('1.jobworker blockchain heartBeat : ', beat);
   try {
-    cloudAlive.path("HEART_BEAT").put({ id: DEVICE_ID, date: beat });
+    aliveChannel.path("HEART_BEAT").put({ id: DEVICE_ID, date: beat });
   } catch (e) {}
 };
+///////////////////////////
+// auto register new worker - ID will be replaced with PKI and hash value
+//////////////////////////
 const registerWorker = id => {
   const currentDate = new Date().toISOString();
-  console.log("1.jobworker commChannels registerWorker : ", id);
+  console.log("1.jobworker blockchain registerWorker : ", id);
   try {
     let newPeer = gun.get(id);
     // first timer heard from this peer
@@ -66,7 +72,7 @@ const registerWorker = id => {
       .get("alive")
       .not(key => {
         console.log(
-          "3.jobworker commChannels registerWorker NEW peer : ",
+          "3.jobworker blockchain registerWorker NEW peer : ",
           key,
           id
         );
@@ -84,7 +90,7 @@ const registerWorker = id => {
       .get("alive")
       .val(lastAlive => {
         console.log(
-          "4.jobworker commChannels registerWorker ",
+          "4.jobworker blockchain registerWorker ",
           id,
           " lastAlive ",
           lastAlive
@@ -101,7 +107,7 @@ const registerWorker = id => {
       .get("alive")
       .put(currentDate);
     console.log(
-      "5.jobworker commChannels registerWorker ",
+      "5.jobworker blockchain registerWorker ",
       id,
       " now ",
       currentDate
@@ -113,14 +119,14 @@ var timeout;
 
 const heartbeat_stop = () => {
   clearInterval(timeout);
-  console.log("1.jobworker commChannels The heartbeat has been stopped");
+  console.log("1.jobworker blockchain The heartbeat has been stopped");
 };
 
 const heartbeat_start = () => {
   const beat_interval = 3000; // 3 sec
   timeout = setInterval(heartBeat, beat_interval);
   //  console.log(
-  //    '1.jobworker commChannels heartbeat_start at',
+  //    '1.jobworker blockchain heartbeat_start at',
   //    beat_interval / 1000,
   //    'second intervals',
   //  );
@@ -132,11 +138,11 @@ const heartbeat_start = () => {
 //cloudState.get('HYPER_URL').put(HYPER_URL)
 
 heartbeat_start();
-cloudAlive
+aliveChannel
   .path("HEART_BEAT")
   .get("id")
   .on(id => {
     if (id !== DEVICE_ID) registerWorker(id);
   });
 
-export { getCloudState, putCloudState, getAppState, putAppState };
+export { chainPut, chainGet };
